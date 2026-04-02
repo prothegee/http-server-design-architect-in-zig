@@ -265,6 +265,6 @@ Nevertheless, the architectural idea of a worker pool is sound and matches patte
 ## Summary
 
 *"For balance workload, v2 is suits for most case,
-if lower latency is required, consider use v3"*  @prothegee
+if low latency is required, consider use v3"*  @prothegee
 
 ###### end of readme
