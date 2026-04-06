@@ -99,7 +99,7 @@ fn handlers(io: std.Io, stream: std.Io.net.Stream, keep_alive: bool) void {
     };
 
     while (keep_alive) {
-        const req = server.receiveHead() catch |err| {
+        var req = server.receiveHead() catch |err| {
             if (err == error.HttpConnectionClosing) break;
             if (err == error.ConnectionResetByPeer) break;
             break;
@@ -122,6 +122,11 @@ fn handlers(io: std.Io, stream: std.Io.net.Stream, keep_alive: bool) void {
 
         resp.appendSlice(allocator, body) catch |err| {
             std.debug.print("Error: resp append slice {}\n", .{err});
+            return;
+        };
+
+        req.respond(body, .{}) catch |err| {
+            std.debug.print("Error: req.respond err: {}\n", .{err});
             return;
         };
 

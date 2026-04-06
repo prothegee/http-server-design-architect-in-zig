@@ -90,10 +90,9 @@ fn handlers(io: std.Io, stream: std.Io.net.Stream, keep_alive: bool) void {
     };
 
     while (keep_alive) {
-        const req = server.receiveHead() catch |err| {
+        var req = server.receiveHead() catch |err| {
             if (err == error.HttpConnectionClosing) break;
             if (err == error.ConnectionResetByPeer) break;
-            std.debug.print("Error: receive head: {}\n", .{err});
             break;
         };
         var path = if (std.mem.indexOfScalar(u8, req.head.target, '?')) |pos|
@@ -114,6 +113,11 @@ fn handlers(io: std.Io, stream: std.Io.net.Stream, keep_alive: bool) void {
 
         resp.appendSlice(allocator, body) catch |err| {
             std.debug.print("Error: resp append slice {}\n", .{err});
+            return;
+        };
+
+        req.respond(body, .{}) catch |err| {
+            std.debug.print("Error: req.respond err: {}\n", .{err});
             return;
         };
 
